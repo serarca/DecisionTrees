@@ -64,7 +64,7 @@ def fit_tree(levels):
 def search_split(pInd, nInd, var):
 	entMin = float('inf')
 	for i,v in enumerate(var):
-		print (0.0+ i/len(var))*100
+		print i
 		pData = (posData[v].values)[pInd]
 		nData = (negData[v].values)[nInd]
 		# Should improve this sorting
