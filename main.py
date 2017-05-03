@@ -27,8 +27,11 @@ import pandas as pd
 import numpy as np
 import time
 
-oldPosData = oldPosData.reset_index()
-oldNegData = oldNegData.reset_index()
+oldPosData = oldPosData.reset_index(drop=True)
+oldNegData = oldNegData.reset_index(drop=True)
+#oldPosData.drop('index', axis=1, inplace=True)
+#oldNegData.drop('index', axis=1, inplace=True)
+
 
 var = list(oldPosData.columns.values)
 
@@ -39,6 +42,6 @@ posData = oldPosData.iloc[trainPosIndex].reset_index(drop=True)
 negData = oldNegData.iloc[trainNegIndex].reset_index(drop=True)
 
 start = time.time()
-fit_tree(3)
+tree = fit_tree(3)
 end = time.time()
 print(end - start)

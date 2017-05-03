@@ -84,33 +84,32 @@ def search_split(pInd, nInd, var):
 
 
 def find_split(pData, nData, probSens = .0001):
+	pData = [v for v in pData if not math.isnan(v)]
+	nData = [v for v in nData if not math.isnan(v)]
 	entMin = float('inf')
+	entSplit = float('nan')
 	posLength = len(pData)
 	negLength = len(nData)
 	posInd = 0
 	negInd = 0
 	posVal = pData[posInd]
 	negVal = nData[negInd]
-
 	while((posInd+1) < posLength and posVal == pData[posInd + 1]):
 		posInd += 1
 	while((negInd+1) < negLength and negVal == nData[negInd + 1]):
 		negInd += 1
-
 	if (posInd == 0 and posVal > negVal):
 		posInd = -1
 		negInd = 0
 	elif (negInd == 0 and posVal < negVal):
 		posInd = 0
 		negInd = -1
-
 	# Set the indices at the last index with the same value
-
 	val = min(posVal,negVal)
 	i=0
-
 	while( True ):
-
+		# Should look into this
+		print val
 		posCount = posInd + 1
 		negCount = negInd + 1
 		total = max(posCount + negCount, .1)
@@ -119,15 +118,12 @@ def find_split(pData, nData, probSens = .0001):
 		p2 = float(posLength - posCount)/float(rest)
 		p1 = max(probSens, min(p1, 1 - probSens))
 		p2 = max(probSens, min(p2, 1 - probSens))
-		entropy =  (total * (-p1 * math.log(p1) - (1 - p1) * math.log(1 - p1)) +
-		 			rest * (-p2 * math.log(p2) - (1 - p2) * math.log(1 - p2)))
-
+		entropy =  (total * (-p1 * math.log(p1) - (1 - p1) * math.log(1 - p1)) + rest * (-p2 * math.log(p2) - (1 - p2) * math.log(1 - p2)))
 		if (entropy < entMin):
 			entMin = entropy
 			entSplit = val
 			pIndMin = posInd
 			nIndMin = negInd
-
 		if (posInd == posLength - 1):
 			break
 		else:
@@ -136,7 +132,6 @@ def find_split(pData, nData, probSens = .0001):
 			break
 		else:
 			negNext = nData[negInd+1]
-
 		if (posVal == negVal):
 			if (posNext == negNext):
 				posVal = posNext
