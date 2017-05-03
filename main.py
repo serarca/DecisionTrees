@@ -35,8 +35,8 @@ var = list(oldPosData.columns.values)
 trainPosIndex = random.sample(range(0,oldPosData.shape[0]), int(math.floor(oldPosData.shape[0]*0.8)))
 trainNegIndex = random.sample(range(0,oldNegData.shape[0]), int(math.floor(oldNegData.shape[0]*0.8)))
 
-posData = oldPosData.iloc[trainPosIndex].reset_index()
-negData = oldNegData.iloc[trainNegIndex].reset_index()
+posData = oldPosData.iloc[trainPosIndex].reset_index(drop=True)
+negData = oldNegData.iloc[trainNegIndex].reset_index(drop=True)
 
 start = time.time()
 fit_tree(3)
