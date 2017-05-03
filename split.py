@@ -3,47 +3,84 @@ import random
 import pandas as pd
 import numpy as np
 
-var = ["a","b","c"]
-pData = [random.randint(0,10) for i in range(0,10)]
-pData.sort()
-nData = [random.randint(0,10) for i in range(0,10)]
-nData.sort()
+class Node:
+	nIndex = []
+	pIndex = []
+	varMin = ""
+	splMin = 0
+	level = 0
+	index = 0
+	leaf = False
+	empty = True
 
-a = [random.randint(0,10) for i in range(0,10)]
-b = [random.randint(0,10) for i in range(0,10)]
-c = [random.randint(0,10) for i in range(0,10)]
-posData = pd.DataFrame.from_items([("a",a), ("b",b), ("c",c)])
+def fit_tree(levels):
+    root = Node()
+    root.pIndex = range(0, posData.shape[0])
+    root.nIndex = range(0, negData.shape[0])
+    root.level = 0
+    root.index = 0
+    root.leaf = False
+    root.empty = False
 
-a = [random.randint(0,10) for i in range(0,10)]
-b = [random.randint(0,10) for i in range(0,10)]
-c = [random.randint(0,10) for i in range(0,10)]
-negData = pd.DataFrame.from_items([("a",a), ("b",b), ("c",c)])
+    tree = [[root]]
 
-posOrder = {v:np.argsort(posData[v].values) for v in var}
-negOrder = {v:np.argsort(negData[v].values) for v in var}
+    for l in range(0,levels):
+    	print l
+    	tree.append([])
+    	for i in range(0, 2**l):
+    		t = tree[l][i]
+    		if ((not t.leaf) and (not t.empty)):
+    			varMin, splMin, left, right = search_split(t.pIndex, t.nIndex, var)
+    			t.varMin = varMin
+    			t.splMin = splMin
+    			t1 = Node()
+    			t1.pIndex = left[0]
+    			t1.nIndex = left[1]
+    			t1.level = l + 1
+    			t1.index = l * 2
+    			t1.empty = False
+    			if (len(t1.pIndex) == 0 or len(t1.nIndex) == 0):
+    				t1.leaf = True
+    			else:
+    				t1.leaf = False
+    			tree[l+1].append(t1)
+    			t2 = Node()
+    			t2.pIndex = right[0]
+    			t2.nIndex = right[1]
+    			t2.level = l + 1
+    			t2.index = l * 2
+    			t2.empty = False
+    			if (len(t2.pIndex) == 0 or len(t2.nIndex) == 0):
+    				t2.leaf = True
+    			else:
+    				t2.leaf = False
+    			tree[l+1].append(t2)
+    		else:
+    			tree[l+1].append(Node())
+    			tree[l+1].append(Node())
+    return tree
+
 
 # Receives a set of indices and a set of variables
-def search_split(pIndex, nIndex, pOrder, nOrder, var):
+def search_split(pInd, nInd, var):
 	entMin = float('inf')
 	for v in var:
-		pData = (posData[v][pIndex].values)[pOrder[v]]
-		nData = (negData[v][nIndex].values)[nOrder[v]]
-		split, ent, pInd, nInd = find_split(pData, nData)
+		pData = (posData[v].values)[pInd]
+		nData = (negData[v].values)[nInd]
+		# Should improve this sorting
+		pData.sort()
+		nData.sort()
+		split, ent = find_split(pData, nData)
 		if (ent < entMin):
 			varMin = v
 			entMin = ent
 			splMin = split
-			nIndMin = nInd
-			pIndMin = pInd
-	left = [pIndex[0:(pIndMin + 1)], nIndex[0:(nIndMin + 1)]]
-	right = [pIndex[(pIndMin + 1):], nIndex[(nIndMin + 1):]]
+	pIn = (posData[varMin][pInd] <= splMin).values
+	nIn = (negData[varMin][nInd] <= splMin).values
+	left = [[pInd[i] for i,b in enumerate(pIn) if b], [nInd[i] for i,b in enumerate(nIn) if b]]
+	right = [[pInd[i] for i,b in enumerate(pIn) if not b], [nInd[i] for i,b in enumerate(nIn) if not b]]
+
 	return varMin, splMin, left, right
-
-
-
-
-
-
 
 
 
@@ -148,4 +185,4 @@ def find_split(pData, nData, probSens = .0001):
 				while((negInd+1) < negLength and negVal == nData[negInd+1]):
 					negInd += 1
 
-	return entSplit, entMin, pIndMin, nIndMin
+	return entSplit, entMin#, pIndMin, nIndMin
