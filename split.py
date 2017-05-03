@@ -90,6 +90,8 @@ def find_split(pData, nData, probSens = .0001):
 	entSplit = float('nan')
 	posLength = len(pData)
 	negLength = len(nData)
+	if (posLength == 0 or negLength == 0):
+		return entSplit, entMin
 	posInd = 0
 	negInd = 0
 	posVal = pData[posInd]
