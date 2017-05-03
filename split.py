@@ -12,51 +12,53 @@ class Node:
 	index = 0
 	leaf = False
 	empty = True
+	var = []
 
 def fit_tree(levels):
-    root = Node()
-    root.pIndex = range(0, posData.shape[0])
-    root.nIndex = range(0, negData.shape[0])
-    root.level = 0
-    root.index = 0
-    root.leaf = False
-    root.empty = False
-
-    tree = [[root]]
-
-    for l in range(0,levels):
-    	tree.append([])
-    	for i in range(0, 2**l):
-    		t = tree[l][i]
-    		if ((not t.leaf) and (not t.empty)):
-    			varMin, splMin, left, right = search_split(t.pIndex, t.nIndex, var)
-    			t.varMin = varMin
-    			t.splMin = splMin
-    			t1 = Node()
-    			t1.pIndex = left[0]
-    			t1.nIndex = left[1]
-    			t1.level = l + 1
-    			t1.index = l * 2
-    			t1.empty = False
-    			if (len(t1.pIndex) == 0 or len(t1.nIndex) == 0):
-    				t1.leaf = True
-    			else:
-    				t1.leaf = False
-    			tree[l+1].append(t1)
-    			t2 = Node()
-    			t2.pIndex = right[0]
-    			t2.nIndex = right[1]
-    			t2.level = l + 1
-    			t2.index = l * 2
-    			t2.empty = False
-    			if (len(t2.pIndex) == 0 or len(t2.nIndex) == 0):
-    				t2.leaf = True
-    			else:
-    				t2.leaf = False
-    			tree[l+1].append(t2)
-    		else:
-    			tree[l+1].append(Node())
-    			tree[l+1].append(Node())
+	root = Node()
+	root.pIndex = range(0, posData.shape[0])
+	root.nIndex = range(0, negData.shape[0])
+	root.level = 0
+	root.index = 0
+	root.leaf = False
+	root.empty = False
+	root.var = var
+	tree = [[root]]
+	for l in range(0,levels):
+		tree.append([])
+		for i in range(0, 2**l):
+			t = tree[l][i]
+			if ((not t.leaf) and (not t.empty)):
+				varMin, splMin, left, right = search_split(t.pIndex, t.nIndex, t.var)
+				t.varMin = varMin
+				t.splMin = splMin
+				t1 = Node()
+				t1.pIndex = left[0]
+				t1.nIndex = left[1]
+				t1.level = l + 1
+				t1.index = l * 2
+				t1.empty = False
+				t1.var = available(varMin, var)
+				if (len(t1.pIndex) == 0 or len(t1.nIndex) == 0 or len(t1.var) == 0):
+					t1.leaf = True
+				else:
+					t1.leaf = False
+				tree[l+1].append(t1)
+				t2 = Node()
+				t2.pIndex = right[0]
+				t2.nIndex = right[1]
+				t2.level = l + 1
+				t2.index = l * 2
+				t2.empty = False
+				t2.var = available(varMin, var)
+				if (len(t2.pIndex) == 0 or len(t2.nIndex) == 0 or len(t2.var) == 0):
+					t2.leaf = True
+				else:
+					t2.leaf = False
+				tree[l+1].append(t2)
+			else:
+				tree[l+1].append(Node())
+				tree[l+1].append(Node())
     return tree
 
 
