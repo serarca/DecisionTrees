@@ -59,7 +59,7 @@ def fit_tree(levels):
 			else:
 				tree[l+1].append(Node())
 				tree[l+1].append(Node())
-    return tree
+	return tree
 
 
 # Receives a set of indices and a set of variables
