@@ -109,7 +109,6 @@ def find_split(pData, nData, probSens = .0001):
 	i=0
 	while( True ):
 		# Should look into this
-		print val
 		posCount = posInd + 1
 		negCount = negInd + 1
 		total = max(posCount + negCount, .1)
