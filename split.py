@@ -84,6 +84,8 @@ def search_split(pInd, nInd, var):
 
 
 def find_split(pData, nData, probSens = .0001):
+	prePosLength = len(pData)
+	preNegLength = len(nData)
 	pData = [v for v in pData if not math.isnan(v)]
 	nData = [v for v in nData if not math.isnan(v)]
 	entMin = float('inf')
@@ -114,9 +116,9 @@ def find_split(pData, nData, probSens = .0001):
 		posCount = posInd + 1
 		negCount = negInd + 1
 		total = max(posCount + negCount, .1)
-		rest = max(posLength + negLength - posCount - negCount, .1)
+		rest = max(prePosLength + preNegLength - posCount - negCount, .1)
 		p1 = float(posCount)/float(total)
-		p2 = float(posLength - posCount)/float(rest)
+		p2 = float(prePosLength - posCount)/float(rest)
 		p1 = max(probSens, min(p1, 1 - probSens))
 		p2 = max(probSens, min(p2, 1 - probSens))
 		entropy =  (total * (-p1 * math.log(p1) - (1 - p1) * math.log(1 - p1)) + rest * (-p2 * math.log(p2) - (1 - p2) * math.log(1 - p2)))
