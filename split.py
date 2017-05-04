@@ -98,16 +98,25 @@ def find_split(pData, nData, probSens = .0001):
 	negInd = 0
 	posVal = pData[posInd]
 	negVal = nData[negInd]
-	while((posInd+1) < posLength and posVal == pData[posInd + 1]):
-		posInd += 1
-	while((negInd+1) < negLength and negVal == nData[negInd + 1]):
-		negInd += 1
-	if (posInd == 0 and posVal > negVal):
+
+	if (posVal > negVal):
 		posInd = -1
 		negInd = 0
-	elif (negInd == 0 and posVal < negVal):
+		while ((negInd+1) < negLength and negVal == nData[negInd + 1]):
+			negInd += 1
+	elif (posVal < negVal):
 		posInd = 0
 		negInd = -1
+		while ((posInd+1) < posLength and posVal == pData[posInd + 1]):
+			posInd += 1
+	else:
+		posInd = 0
+		negInd = 0
+		while ((posInd+1) < posLength and posVal == pData[posInd + 1]):
+			posInd += 1
+		while ((negInd+1) < negLength and negVal == nData[negInd + 1]):
+			negInd += 1
+
 	# Set the indices at the last index with the same value
 	val = min(posVal,negVal)
 	i=0
