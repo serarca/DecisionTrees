@@ -1,6 +1,5 @@
-
-
 class Node:
+	prob = float('nan')
 	nIndex = []
 	pIndex = []
 	varMin = ""
@@ -10,6 +9,35 @@ class Node:
 	leaf = False
 	empty = True
 	var = []
+	trainData = []
+
+def classify_tree(tree):
+	size = trainData.shape[0]
+	tree[0][0].trainData = trainData.index.values
+	labels = np.zeros(size) - 1
+	for l in range(0, len(tree)):
+		for i in range(0, 2**l):
+			if ((not tree[l][i].leaf) and (not tree[l][i].empty)):
+				var = tree[l][i].varMin
+				spl = tree[l][i].splMin
+				lInd = (trainData[var].loc[tree[l][i].trainData]<=spl).values
+				leftIndex = [j for j,b in enumerate(lInd) if b]
+				rightIndex = [j for j,b in enumerate(lInd) if not b]
+				tree[l+1][2*i].trainData = (tree[l][i].trainData)[leftIndex]
+				tree[l+1][2*i + 1].trainData = (tree[l][i].trainData)[rightIndex]
+			if (tree[l][i].leaf):
+				labels[tree[l][i].trainData] = tree[l][i].prob
+	return labels
+
+
+# This fills the probabilities in the tree
+def fill_prob(tree):
+	for l in range(0,len(tree)):
+		for i in range(0, 2**l):
+			if (not tree[l][i].empty):
+				tree[l][i].prob = len(tree[l][i].pIndex)/(len(tree[l][i].pIndex) + len(tree[l][i].nIndex) + 0.0)
+	return tree
+
 
 def fit_tree(levels):
 	root = Node()
@@ -36,7 +64,7 @@ def fit_tree(levels):
 				t1.index = l * 2
 				t1.empty = False
 				t1.var = available(varMin, var)
-				if (len(t1.pIndex) == 0 or len(t1.nIndex) == 0 or len(t1.var) == 0):
+				if (len(t1.pIndex) == 0 or len(t1.nIndex) == 0 or len(t1.var) == 0 or l == levels - 1):
 					t1.leaf = True
 				else:
 					t1.leaf = False
@@ -48,7 +76,7 @@ def fit_tree(levels):
 				t2.index = l * 2
 				t2.empty = False
 				t2.var = available(varMin, var)
-				if (len(t2.pIndex) == 0 or len(t2.nIndex) == 0 or len(t2.var) == 0):
+				if (len(t2.pIndex) == 0 or len(t2.nIndex) == 0 or len(t2.var) == 0 or l == levels - 1):
 					t2.leaf = True
 				else:
 					t2.leaf = False
@@ -56,6 +84,7 @@ def fit_tree(levels):
 			else:
 				tree[l+1].append(Node())
 				tree[l+1].append(Node())
+	tree = fill_prob(tree)
 	return tree
 
 
