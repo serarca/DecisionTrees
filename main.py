@@ -14,11 +14,17 @@ testNegIndex = [i for i in range(0,oldNegData.shape[0]) if i not in trainNegInde
 trainData = pd.concat([oldPosData.loc[testPosIndex],oldNegData.loc[testNegIndex]])
 trainData = trainData.reset_index(drop=True)
 
-tree = fit_tree(15)
+def available(a,b):
+    return b
+def info(a):
+    return a
+
+tree = fit_tree(2)
 prediction = classify_tree(tree)
-true = np.append(np.zeros(len(testPosIndex)) + 1,np.zeros(len(testNegIndex)))
+true_labels = np.append(np.zeros(len(testPosIndex)) + 1,np.zeros(len(testNegIndex)))
 error = sum(abs(true - prediction))/trainData.shape[0]
 error
+rules = get_rules(tree,true_labels)
 
 
 #var = ["a","b","c"]

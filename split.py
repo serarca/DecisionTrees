@@ -10,6 +10,8 @@ class Node:
 	empty = True
 	var = []
 	trainData = []
+	trueLabels = []
+	rules = []
 
 def classify_tree(tree):
 	size = trainData.shape[0]
@@ -28,6 +30,40 @@ def classify_tree(tree):
 			if (tree[l][i].leaf):
 				labels[tree[l][i].trainData] = tree[l][i].prob
 	return labels
+
+# We fill the tree with its true labels to calculate error at each leaf later
+def fill_true_labels(tree, true_labels):
+	true_labels = np.asarray(true_labels)
+	for l in range(0, len(tree)):
+		for i in range(0, 2**l):
+			tree[l][i].true_labels = true_labels[tree[l][i].trainData]
+
+def leaves(tree):
+	leaves = []
+	for l in range(0, len(tree)):
+		for i in range(0, 2**l):
+			if (tree[l][i].leaf):
+				leaves.append([l,i])
+	return leaves
+
+def get_rules(tree, true_labels):
+	fill_true_labels(tree, true_labels)
+	rules = []
+	lea = leaves(tree)
+	size_pos = len(tree[0][0].pIndex) + 0.0
+	size_neg = len(tree[0][0].nIndex) + 0.0
+	for k in lea:
+		l = k[0]
+		i = k[1]
+		node = tree[l][i]
+		support = (len(node.nIndex)/size_pos + len(node.pIndex)/size_neg)/2
+		if (node.prob>=0.5):
+			error = sum(abs(node.true_labels - 1))/len(node.true_labels)
+		else:
+			error = sum(abs(node.true_labels))/len(node.true_labels)
+		rules.append({"rule":node.rules, "prob": node.prob, "supp":support, "error":error})
+	return rules
+
 
 
 # This fills the probabilities in the tree
@@ -64,6 +100,8 @@ def fit_tree(levels):
 				t1.index = l * 2
 				t1.empty = False
 				t1.var = available(varMin, var)
+				t1.rules = list(t.rules)
+				t1.rules.append([info(varMin),"<=",splMin])
 				if (len(t1.pIndex) == 0 or len(t1.nIndex) == 0 or len(t1.var) == 0 or l == levels - 1):
 					t1.leaf = True
 				else:
@@ -76,6 +114,8 @@ def fit_tree(levels):
 				t2.index = l * 2
 				t2.empty = False
 				t2.var = available(varMin, var)
+				t2.rules = list(t.rules)
+				t2.rules.append([info(varMin),">",splMin])
 				if (len(t2.pIndex) == 0 or len(t2.nIndex) == 0 or len(t2.var) == 0 or l == levels - 1):
 					t2.leaf = True
 				else:
