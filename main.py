@@ -22,7 +22,7 @@ def info(a):
 tree = fit_tree(2)
 prediction = classify_tree(tree)
 true_labels = np.append(np.zeros(len(testPosIndex)) + 1,np.zeros(len(testNegIndex)))
-error = sum(abs(true - prediction))/trainData.shape[0]
+error = sum(abs(true_labels - prediction))/trainData.shape[0]
 error
 rules = get_rules(tree,true_labels)
 
@@ -84,12 +84,32 @@ testNegIndex = [i for i in range(0,oldNegData.shape[0]) if i not in trainNegInde
 trainData = pd.concat([oldPosData.loc[testPosIndex],oldNegData.loc[testNegIndex]])
 trainData = trainData.reset_index(drop=True)
 
+#first_level_entropies = get_first_level_entropies(var)
+
 start = time.time()
-tree = fit_tree(3)
+linear_tree1 = fit_tree(3, linear_weights(var, 1))
+linear_tree2 = fit_tree(3, linear_weights(var, 0.5))
+linear_tree3 = fit_tree(3, linear_weights(var, 0.1))
+no_tree = fit_tree(3, linear_weights(var, 0))
 end = time.time()
-prediction = classify_tree(tree)
+
+linear_prediction1 = classify_tree(linear_tree1)
+linear_prediction2 = classify_tree(linear_tree2)
+linear_prediction3 = classify_tree(linear_tree3)
+no_prediction = classify_tree(no_tree)
+
 true = np.append(np.zeros(len(testPosIndex)) + 1,np.zeros(len(testNegIndex)))
-error = sum(abs(true - prediction))/trainData.shape[0]
+linear_error1 = sum(abs(true - linear_prediction1))/trainData.shape[0]
+linear_error2 = sum(abs(true - linear_prediction2))/trainData.shape[0]
+linear_error3 = sum(abs(true - linear_prediction3))/trainData.shape[0]
+
+no_error = sum(abs(true - no_prediction))/trainData.shape[0]
+
+
 error
+
+
+
+
 
 print(end - start)

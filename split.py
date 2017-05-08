@@ -46,6 +46,7 @@ def leaves(tree):
 				leaves.append([l,i])
 	return leaves
 
+# Returns an array with the rules and their accuracy
 def get_rules(tree, true_labels):
 	fill_true_labels(tree, true_labels)
 	rules = []
@@ -61,7 +62,7 @@ def get_rules(tree, true_labels):
 			error = sum(abs(node.true_labels - 1))/len(node.true_labels)
 		else:
 			error = sum(abs(node.true_labels))/len(node.true_labels)
-		rules.append({"rule":node.rules, "prob": node.prob, "supp":support, "error":error})
+		rules.append({"rule":node.rules, "prob": node.prob, "supp":support, "error":error, "position":[l,i]})
 	return rules
 
 
@@ -74,8 +75,24 @@ def fill_prob(tree):
 				tree[l][i].prob = len(tree[l][i].pIndex)/(len(tree[l][i].pIndex) + len(tree[l][i].nIndex) + 0.0)
 	return tree
 
+# This fills the rules in the tree
+def fill_rule(tree):
+	levels = len(tree)
+	for l in range(0,levels):
+		for i in range(0, 2**l):
+			t = tree[l][i]
+			if ((not t.leaf) and (not t.empty)):
+				varMin = t.varMin
+				splMin = t.splMin
+				t1 = tree[l+1][2*i]
+				t1.rules = list(t.rules)
+				t1.rules.append([info(varMin),"<=",splMin])
+				t2 = tree[l+1][2*i + 1]
+				t2.rules = list(t.rules)
+				t2.rules.append([info(varMin),">",splMin])
+	return tree
 
-def fit_tree(levels):
+def fit_tree(levels, weights):
 	root = Node()
 	root.pIndex = range(0, posData.shape[0])
 	root.nIndex = range(0, negData.shape[0])
@@ -90,7 +107,7 @@ def fit_tree(levels):
 		for i in range(0, 2**l):
 			t = tree[l][i]
 			if ((not t.leaf) and (not t.empty)):
-				varMin, splMin, left, right = search_split(t.pIndex, t.nIndex, t.var)
+				varMin, splMin, left, right = search_split(t.pIndex, t.nIndex, t.var, weights)
 				t.varMin = varMin
 				t.splMin = splMin
 				t1 = Node()
@@ -128,8 +145,8 @@ def fit_tree(levels):
 	return tree
 
 
-# Receives a set of indices and a set of variables
-def search_split(pInd, nInd, var):
+# Receives a set of indices and a set of variables and weights
+def search_split(pInd, nInd, var, weights):
 	entMin = float('inf')
 	for i,v in enumerate(var):
 		print i
@@ -139,6 +156,7 @@ def search_split(pInd, nInd, var):
 		pData.sort()
 		nData.sort()
 		split, ent = find_split(pData, nData)
+		ent = ent * weights[v]
 		if (ent < entMin):
 			varMin = v
 			entMin = ent
@@ -150,7 +168,19 @@ def search_split(pInd, nInd, var):
 
 	return varMin, splMin, left, right
 
-
+def get_first_level_entropies(var):
+	entMin = float('inf')
+	entropies = []
+	for i,v in enumerate(var):
+		print i
+		pData = posData[v].values
+		nData = negData[v].values
+		# Should improve this sorting
+		pData.sort()
+		nData.sort()
+		split, ent = find_split(pData, nData)
+		entropies.append(ent)
+	return entropies
 
 def find_split(pData, nData, probSens = .0001):
 	prePosLength = len(pData)

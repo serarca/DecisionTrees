@@ -28,7 +28,30 @@ def info(index):
 	var = variable[int(math.floor((index % 4388)/1097))]
 	beg = col_ref_matrix(168)[0][int(index % 1097)]
 	end = col_ref_matrix(168)[1][int(index % 1097)]
-	print (sensor , var ,beg,end)
+	return sensor +" "+ var +" " +str(beg) + "-" + str(end)
+
+# Gives the end_day of a variable
+def end_day(index):
+    return col_ref_matrix(168)[1][int(index % 1097)]
+
+# Calculates the mean entropy for events that end in different days
+def get_mean_entropy(entropies, var):
+    d = np.zeros(168)
+    c = np.zeros(168)
+    for v in var:
+        if entropies[v] != float('inf'):
+            d[end_day(v)] += entropies[v]
+            c[end_day(v)] += 1
+        else:
+            print v
+    return d
+
+
+def linear_weights(var, slope):
+    weights = np.zeros(len(var))
+    for v in var:
+        weights[v] = (1 - end_day(v)*slope/168.0)
+    return weights
 
 # Lists all available variables after a given variable
 def available(index, v):
