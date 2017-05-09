@@ -57,7 +57,7 @@ def get_rules(tree, true_labels):
 		l = k[0]
 		i = k[1]
 		node = tree[l][i]
-		support = (len(node.nIndex)/size_pos + len(node.pIndex)/size_neg)/2
+		support = (len(node.nIndex)/size_neg + len(node.pIndex)/size_pos)/2
 		if (node.prob>=0.5):
 			if (len(node.true_labels) == 0):
 				error = float('nan')

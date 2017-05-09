@@ -26,7 +26,7 @@ end = time.time()
 print(end - start)
 
 prediction = classify_tree(tree)
-error = sum(abs(true - prediction))/trainData.shape[0]
+error = sum(abs(true - prediction))/trainData.shape[0.15]
 rules = get_rules(tree,true)
 
 import numpy as np
