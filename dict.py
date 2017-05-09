@@ -50,7 +50,7 @@ def get_mean_entropy(entropies, var):
 def linear_weights(var, slope):
     weights = np.zeros(len(var))
     for v in var:
-        weights[v] = end_day(v)*slope/168.0 + (1-slope)
+        weights[v] = (end_day(v)+1)*slope/168.0 + (1-slope)
     return weights
 
 # Lists all available variables after a given variable
