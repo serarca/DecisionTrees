@@ -59,9 +59,15 @@ def get_rules(tree, true_labels):
 		node = tree[l][i]
 		support = (len(node.nIndex)/size_pos + len(node.pIndex)/size_neg)/2
 		if (node.prob>=0.5):
-			error = sum(abs(node.true_labels - 1))/len(node.true_labels)
+			if (len(node.true_labels) == 0):
+				error = float('nan')
+			else:
+				error = sum(abs(node.true_labels - 1))/len(node.true_labels)
 		else:
-			error = sum(abs(node.true_labels))/len(node.true_labels)
+			if (len(node.true_labels) == 0):
+				error = float('nan')
+			else:
+				error = sum(abs(node.true_labels))/len(node.true_labels)
 		rules.append({"rule":node.rules, "prob": node.prob, "supp":support, "error":error, "position":[l,i]})
 	return rules
 

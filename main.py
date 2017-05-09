@@ -65,6 +65,9 @@ import pandas as pd
 import numpy as np
 import time
 
+
+oldPosData = posData
+oldNegData = negData
 oldPosData = oldPosData.reset_index(drop=True)
 oldNegData = oldNegData.reset_index(drop=True)
 #oldPosData.drop('index', axis=1, inplace=True)
@@ -84,6 +87,17 @@ testNegIndex = [i for i in range(0,oldNegData.shape[0]) if i not in trainNegInde
 trainData = pd.concat([oldPosData.loc[testPosIndex],oldNegData.loc[testNegIndex]])
 trainData = trainData.reset_index(drop=True)
 
+negDataM = negData.as_matrix()
+negDataM.tofile("/lfs/local/camelo/DecisionTrees/negData.np")
+posDataM = posData.as_matrix()
+posDataM.tofile("/lfs/local/camelo/DecisionTrees/posData.np")
+trainDataM = trainData.as_matrix()
+trainDataM.tofile("/lfs/local/camelo/DecisionTrees/trainData.np")
+true = np.append(np.zeros(len(testPosIndex)) + 1,np.zeros(len(testNegIndex)))
+true.tofile("/lfs/local/camelo/DecisionTrees/true.np")
+
+
+
 #first_level_entropies = get_first_level_entropies(var)
 
 start = time.time()
@@ -98,7 +112,6 @@ linear_prediction2 = classify_tree(linear_tree2)
 linear_prediction3 = classify_tree(linear_tree3)
 no_prediction = classify_tree(no_tree)
 
-true = np.append(np.zeros(len(testPosIndex)) + 1,np.zeros(len(testNegIndex)))
 linear_error1 = sum(abs(true - linear_prediction1))/trainData.shape[0]
 linear_error2 = sum(abs(true - linear_prediction2))/trainData.shape[0]
 linear_error3 = sum(abs(true - linear_prediction3))/trainData.shape[0]
@@ -107,9 +120,6 @@ no_error = sum(abs(true - no_prediction))/trainData.shape[0]
 
 
 error
-
-
-
 
 
 print(end - start)
