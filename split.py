@@ -236,7 +236,7 @@ def find_split(pData, nData, probSens = .0001):
 		p1 = max(probSens, min(p1, 1 - probSens))
 		p2 = max(probSens, min(p2, 1 - probSens))
 		#entropy =  (total * (-p1 * math.log(p1) - (1 - p1) * math.log(1 - p1)) + rest * (-p2 * math.log(p2) - (1 - p2) * math.log(1 - p2)))
-		entropy = (total * (-p1**2 - (1 - p1)**2) + rest * (-p2 ** 2 - (1 - p2) ** 2))
+		entropy = (total * (1 -p1**2 - (1 - p1)**2) + rest * (1 - p2 ** 2 - (1 - p2) ** 2))
 		#print val, entropy
 		if (entropy < entMin):
 			entMin = entropy
