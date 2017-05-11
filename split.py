@@ -112,7 +112,7 @@ def fit_tree(posData, negData, variables, levels, weights):
 				t2.level = l + 1
 				t2.index = l * 2
 				t2.empty = False
-				t2.var = available(varMin, var)
+				t2.var = available(varMin, variables)
 				t2.rules = list(t.rules)
 				t2.rules.append([info(varMin),">",splMin])
 				if (len(t2.pIndex) == 0 or len(t2.nIndex) == 0 or len(t2.var) == 0 or l == levels - 1):
